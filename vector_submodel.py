@@ -88,14 +88,12 @@ def vector_choose_event(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
 
     # check that events can happen:
     a0 = np.sum(event_rates['rate']) # total of all rates
-    if a0 == 0:
-        return None
 
     #do a weighted random draw:
     event_probabilities = event_rates['rate']/a0
     chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities) # TODO: is this weighted random draw equivalent to the gillespie algo's way of choosing things?
     
-    return chosen_event[0]
+    return a0, chosen_event[0]
 
 
 ## Test that it compiles:
