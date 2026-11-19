@@ -17,7 +17,7 @@ host = np.array([
     [ 0,  0,  0,  0, -1,  0, +1],   # Plague Death (Contact)
     [ 0,  0,  0,  0,  0, -1, +1],   # Plague Death (Flea)
 ])
-event_names = ["Birth", "Susceptible Death", "Infectious (Contact) Death", 
+host_event_names = ["Birth", "Susceptible Death", "Infectious (Contact) Death", 
                "Infectious (Flea) Death","Vaccinated Death","Reservoir Decay",
                 "Susceptible Inf. (Contact)","Susceptible Inf. (Reservoir)",
                 "Susceptible Inf. (Flea)", "Loss of Immunity","End of latency (Contact)",
@@ -55,8 +55,31 @@ vector = np.array([
     [ 0,   0,   0,   0,    0,    0,  -1,   +1], #Late Stage, Finds Host
 ])
 
-event_names = ["Birth", "Susceptible (Q) Death", "Susceptible (H) Death", 
-               "Infectious (Q) Death","Vaccinated Death","Reservoir Decay",
-                "Susceptible Inf. (Contact)","Susceptible Inf. (Reservoir)",
-                "Susceptible Inf. (Flea)", "Loss of Immunity","End of latency (Contact)",
-                "End of latency (Flea)", "Plague Death (Contact)", "Plague Death (Flea)"]
+vector_event_names = [
+    "Birth",
+    "Susceptible (Q) Death",
+    "Susceptible (H) Death",
+    "Infectious (Q) Death",
+    "Infectious (H) Death",
+    "Early Stage (Q) Death",
+    "Early Stage (H) Death",
+    "Early Stage (Q) P.D.",
+    "Early Stage (H) P.D.",
+    "Late Stage (Q) Death",
+    "Late Stage (H) Death",
+    "Late Stage (Q) P.D.",
+    "Late Stage (H) P.D.",
+    "Susceptible Leaves Host",
+    "Susceptible Finds Host",
+    "Susceptible Infected",
+    "Infectious Leaves Host",
+    "Infectious Finds Host",
+    "End of Latency (H)",
+    "End of Latency (Q)",
+    "Early Stage Leaves Host",
+    "Early Stage, Finds Host",
+    "Grad. to Late Stage (H)",
+    "Grad. to Late Stage (Q)",
+    "Late Stage Leaves Host",
+    "Late Stage, Finds Host",
+]
