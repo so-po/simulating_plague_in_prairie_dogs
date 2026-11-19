@@ -36,8 +36,8 @@ vector = np.array([
     [ 0,   0,   0,   0,    0,   -1,   0,    0], #Early Stage (H) Death
     [ 0,   0,   0,   0,   -1,    0,   0,    0], #Early Stage (Q) P.D.
     [ 0,   0,   0,   0,    0,   -1,   0,    0], #Early Stage (H) P.D.
-    [ 0,   0,   0,   0,   -1,    0,   0,    0], #Late Stage (Q) Death
-    [ 0,   0,   0,   0,    0,   -1,   0,    0], #Late Stage (H) Death
+    [ 0,   0,   0,   0,    0,    0,  -1,    0], #Late Stage (Q) Death
+    [ 0,   0,   0,   0,    0,    0,   0,   -1], #Late Stage (H) Death
     [ 0,   0,   0,   0,    0,    0,  -1,    0], #Late Stage (Q) P.D.
     [ 0,   0,   0,   0,    0,    0,   0,   -1], #Late Stage (H) P.D.
     [+1,  -1,   0,   0,    0,    0,   0,    0], #Susceptible Leaves Host
@@ -45,13 +45,13 @@ vector = np.array([
     [ 0,  -1,   0,  +1,    0,    0,   0,    0], #Susceptible Infected
     [ 0,   0,  +1,  -1,    0,    0,   0,    0], #Infectious Leaves Host
     [ 0,   0,  -1,  +1,    0,    0,   0,    0], #Infectious Finds Host
-    [ 0,   0,   0,  -1,    0,   -1,   0,    0], #End of Latency (H)
-    [ 0,   0,  -1,   0,   -1,    0,   0,    0], #End of Latency (Q)
+    [ 0,   0,   0,  -1,    0,   +1,   0,    0], #End of Latency (H)
+    [ 0,   0,  -1,   0,   +1,    0,   0,    0], #End of Latency (Q)
     [ 0,   0,   0,   0,   +1,   -1,   0,    0], #Early Stage Leaves Host
     [ 0,   0,   0,   0,   -1,   +1,   0,    0], #Early Stage, Finds Host
     [ 0,   0,   0,   0,    0,   -1,   0,   +1], #Grad. to Late Stage (H)
     [ 0,   0,   0,   0,   -1,    0,  +1,    0], #Grad. to Late Stage (Q)
-    [ 0,   0,   0,   0,    0,    0,  +1,   +1], #Late Stage Leaves Host
+    [ 0,   0,   0,   0,    0,    0,  +1,   -1], #Late Stage Leaves Host
     [ 0,   0,   0,   0,    0,    0,  -1,   +1], #Late Stage, Finds Host
 ])
 
@@ -60,4 +60,3 @@ event_names = ["Birth", "Susceptible (Q) Death", "Susceptible (H) Death",
                 "Susceptible Inf. (Contact)","Susceptible Inf. (Reservoir)",
                 "Susceptible Inf. (Flea)", "Loss of Immunity","End of latency (Contact)",
                 "End of latency (Flea)", "Plague Death (Contact)", "Plague Death (Flea)"]
-
