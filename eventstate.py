@@ -1,5 +1,5 @@
 import numpy as np
-host = np.array([
+host_event_outcomes = np.array([
 
     # S   V  Ec  Ef  Ic  If   M
     [+1,  0,  0,  0,  0,  0,  0],   # Birth
@@ -24,7 +24,7 @@ host_event_names = ["Birth", "Susceptible Death", "Infectious (Contact) Death",
                 "End of latency (Flea)", "Plague Death (Contact)", "Plague Death (Flea)"]
 
 
-vector = np.array([
+vector_event_outcomes = np.array([
 
     #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
     [ 1,   0,   0,   0,    0,    0,   0,    0], #Birth

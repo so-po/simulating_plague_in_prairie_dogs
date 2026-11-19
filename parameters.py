@@ -8,9 +8,10 @@ d_range = [0.033, 0.092] #rate of insecticidal dusting
 eta_range = [0, 0.99] #general culling proportion
 h_range = [0, 5] #years of vaccination before disease arrival
 
-# Values: (We need to set these)
-lmbda = None
-v = None
+# Values: (placeholder values - we need to set these)
+#TODO
+lmbda = 0 
+v = 0 
 d = None
 eta = None
 h = None
