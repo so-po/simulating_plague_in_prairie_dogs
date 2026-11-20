@@ -31,7 +31,7 @@ def host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2):
     
     event_rates.append((mu*S, 'Susceptible Death')) 
     event_rates.append((mu*Ec, 'Infectious (Contact) Death')) 
-    event_rates.append((mu*Ef, 'Infectious (Flea) Death ')) 
+    event_rates.append((mu*Ef, 'Infectious (Flea) Death')) 
     event_rates.append((mu*V, 'Vaccinated Death')) 
 
     event_rates.append((mu*zeta, 'Reservoir Decay')) 
@@ -55,9 +55,11 @@ def host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2):
 
     # check that events can happen:
     a0 = np.sum(event_rates['rate']) # total of all rates
-
+    if a0 <= 0:
+        return 0, None
+    
     #do a weighted random draw:
     event_probabilities = event_rates['rate']/a0
-    chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities) # TODO: is this weighted random draw equivalent to the gillespie algo's way of choosing things?
+    chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
     
     return a0, chosen_event[0]

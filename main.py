@@ -11,7 +11,7 @@ def run_simulation():
     # ==== SET UP COMPARTMENTS: ====
 
     # host compartments:
-    S = 1
+    S = 1000
     Ef = 0
     Ec = 0
     V = 0
@@ -31,7 +31,7 @@ def run_simulation():
     Fiq2 = 0
     Fih2 = 0
 
-    loops = 20 # how many times to run the algo 
+    loops = 1000 # how many times to run the algo 
     t = 0 # time
 
     #keep track of values for graphing:
@@ -52,6 +52,9 @@ def run_simulation():
 
         # TODO: BREAK if a_0 = 0 from either of these functions
 
+        if a0_host == 0 or a0_vector == 0:
+            break 
+
         # ==== UPDATE TIME ==== 
 
         # TODO: Draw τ ∼Exp(a0) and set t→t+ τ.
@@ -61,7 +64,10 @@ def run_simulation():
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
-        host_compartment_updates = host_event_outcomes[host_event_names.index(host_event)] # S   V  Ec  Ef  Ic  If   M
+        try:
+            host_compartment_updates = host_event_outcomes[host_event_names.index(host_event)] # S   V  Ec  Ef  Ic  If   M
+        except:
+            raise Exception(f"ERROR: Host event DNE: {host_event}.")
         s, v, ec, ef, ic, i_f, m = host_compartment_updates
         S += s
         V += v
@@ -70,11 +76,14 @@ def run_simulation():
         Ic += ic
         If += i_f
         M += m
-        print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
+        #print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
         host_compartments.append([S, V, Ec, Ef, Ic, If, M])
 
 
-        vector_compartment_updates = vector_event_outcomes[vector_event_names.index(vector_event)] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
+        try:
+            vector_compartment_updates = vector_event_outcomes[vector_event_names.index(vector_event)] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
+        except:
+            raise Exception(f"ERROR: Vector event DNE: {vector_event}.")
         fsq, fsh, feq, feh, fiq1, fih1, fiq2, fih2 = vector_compartment_updates
         Fsq += fsq
         Fsh += fsh
@@ -84,25 +93,20 @@ def run_simulation():
         Fih1 += fih1
         Fiq2 += fiq2
         Fih2 += fih2
-        print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
+        #print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
         vector_compartments.append([Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2])
 
     return times, host_compartments, vector_compartments
 
 times, host_compartments, vector_compartments = run_simulation()
 
-
-
 # === PLOT ===
 # TODO
 
-# fig = plt.figure()
+host_compartments = np.array(host_compartments)
 
-# for t, S, I, R in trajectories:
-#     ax.step(t, I, where='post', color=RED, alpha=0.3, lw=1.2)
-# ax.set_xlabel('time')
-# ax.set_ylabel('infected, $I(t)$')
-# ax.set_title('25 stochastic trajectories')
-# ax.set_xlim(left=0)
-# ax.set_ylim(bottom=0)
-# plt.show()
+plt.plot(times, host_compartments[:, 0], label='S')
+plt.plot(times, host_compartments[:, 4], label='If')
+plt.plot(times, host_compartments[:, 5], label='Ic')
+plt.legend()
+plt.show()
