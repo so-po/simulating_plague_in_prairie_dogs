@@ -1,11 +1,12 @@
-# Run submodels together & possibly load in parameters
+import matplotlib
+import matplotlib.pylab as plt
 
 from parameters import *
 from eventstate import *
 from vector_submodel import * 
 from host_submodel import *
 
-def main():
+def run_simulation():
 
     # ==== SET UP COMPARTMENTS: ====
 
@@ -33,15 +34,18 @@ def main():
     loops = 20 # how many times to run the algo 
     t = 0 # time
 
-    # ==== CHOOSE EVENT : ====
-
-
+    #keep track of values for graphing:
+    vector_compartments = []
+    host_compartments = []
+    times = []
 
     for i in range(0, loops):
 
         if (N == 0):
             print("All hosts are dead. Ending loop")
             break
+
+        # ==== CHOOSE EVENT : ====
 
         a0_host, host_event = host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2)   
         a0_vector, vector_event = vector_choose_event(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N)
@@ -52,8 +56,8 @@ def main():
 
         # TODO: Draw τ ∼Exp(a0) and set t→t+ τ.
 
-        # time_increment = 
-        #t = t + time_increment
+        t += 1 #placeholder
+        times.append(t)
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
@@ -67,9 +71,10 @@ def main():
         If += i_f
         M += m
         print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
+        host_compartments.append([S, V, Ec, Ef, Ic, If, M])
+
 
         vector_compartment_updates = vector_event_outcomes[vector_event_names.index(vector_event)] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
-
         fsq, fsh, feq, feh, fiq1, fih1, fiq2, fih2 = vector_compartment_updates
         Fsq += fsq
         Fsh += fsh
@@ -80,13 +85,24 @@ def main():
         Fiq2 += fiq2
         Fih2 += fih2
         print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
+        vector_compartments.append([Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2])
+
+    return times, host_compartments, vector_compartments
+
+times, host_compartments, vector_compartments = run_simulation()
 
 
-        # === STORE COMPARTMENT VALUES (for plotting later) ===
 
-        # TODO
-      
-    # === PLOT ===
-    # TODO
+# === PLOT ===
+# TODO
 
-main()
+# fig = plt.figure()
+
+# for t, S, I, R in trajectories:
+#     ax.step(t, I, where='post', color=RED, alpha=0.3, lw=1.2)
+# ax.set_xlabel('time')
+# ax.set_ylabel('infected, $I(t)$')
+# ax.set_title('25 stochastic trajectories')
+# ax.set_xlim(left=0)
+# ax.set_ylim(bottom=0)
+# plt.show()
