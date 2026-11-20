@@ -28,7 +28,7 @@ def host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2):
 
     # CIRCLE BACK TO BIRTH
   
-    
+    event_rates.append((r_tilde*(1-(N/k)(S+V)*S), 'Birth')) 
     event_rates.append((mu*S, 'Susceptible Death')) 
     event_rates.append((mu*Ec, 'Infectious (Contact) Death')) 
     event_rates.append((mu*Ef, 'Infectious (Flea) Death')) 
