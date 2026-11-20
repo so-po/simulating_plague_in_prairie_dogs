@@ -60,8 +60,8 @@ def run_simulation():
         # TODO: Draw τ ∼Exp(a0) and set t→t+ τ.
         
         a0 = a0_host + a0_vector
-        tau = np.random.exponential(1 / a0)  # numpy takes the scale = 1/rate
-        t += tau
+        placeholder_var = np.random.exponential(1 / a0)  # numpy takes the scale = 1/rate
+        t += placeholder_var
         times.append(t)
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
