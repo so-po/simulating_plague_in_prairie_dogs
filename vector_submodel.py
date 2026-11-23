@@ -79,7 +79,7 @@ def get_vector_events(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
     event_rates.append((epsilon*Fiq1, 'Grad. to Late Stage (Q)')) # i1 v -> i2 v (graduate to late state infectiousness)
 
     event_rates.append((delta*Fih2, 'Late Stage Leaves Host')) # i2 leaves host
-    event_rates.append((find_host_rate*Fih2, 'Late Stage, Finds Host')) # i2 finds host
+    event_rates.append((find_host_rate*Fiq2, 'Late Stage, Finds Host')) # i2 finds host
 
 
     event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')])) #format array
