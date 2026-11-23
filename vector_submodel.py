@@ -28,13 +28,13 @@ import random
 #   h = on host
 #
 
-def vector_choose_event(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
-    # Run one step of the gillepsie algorithm for the vector submodel & return the state that will happen based on the rates of each event
+def get_vector_events(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
+    # Return all possible gillespie algo events & their rates
     # Arguments: 
-    # - Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2: # of fleas in each compartment
+    # - Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2: # of fleas in each vector compartment
     # - Ic, If: # of infected hosts, by contact and by fleas
     # - N: total # of hosts
-    # Returns: A string representing the state that was randomly drawn
+    # Returns: A numpy array containing all events and their rates (w/ columns 'rate' and 'event_name')
 
     # ==== EVENTS : ==== 
     event_rates = [] # array of tuples, containing: (event rate, name of event)
@@ -82,21 +82,5 @@ def vector_choose_event(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
     event_rates.append((find_host_rate*Fih2, 'Late Stage, Finds Host')) # i2 finds host
 
 
-    # ==== CHOOSE AN EVENT : ==== 
-
     event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')])) #format array
-
-    # check that events can happen:
-    a0 = np.sum(event_rates['rate']) # total of all rates
-    if a0 <= 0:
-        return 0, None
-
-    #do a weighted random draw:
-    event_probabilities = event_rates['rate']/a0
-    chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
-    
-    return a0, chosen_event[0]
-
-
-## Test that it compiles:
-# print(vector_choose_event(100, 200, 0, 0, 0, 0, 0, 0, 10, 1, 50))
+    return event_rates

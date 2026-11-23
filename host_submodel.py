@@ -15,20 +15,23 @@ import random
 # N : total pop of prarie dogs
 
 
-
-def host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2):
-    # Run one step of the gillepsie algorithm for the host submodel & return the state that will happen based on the rates of each event
+def get_host_events(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2, day):
+    # Run one step of the gillespie algorithm for the host submodel & return the state that will happen based on the rates of each event
     # Arguments: 
-    # - Fiq1, Fiq2, : # of fleas in each compartment
+    # - S, V, M, Ec, Ef, Ic, If: # of prairie dogs in each host compartments
+    # - Fiq1, Fiq2, : # of fleas in each vector compartment
     # - N: total # of hosts
-    # Returns: A string representing the state that was randomly drawn
+    # - day: the time step in days since the simulation started (alters the birth rate)
+    # Returns: A numpy array containing all events and their rates (w/ columns 'rate' and 'event_name')
 
     # ==== EVENTS : ==== 
     event_rates = [] # array of tuples, containing: (event rate, name of event)
 
     # CIRCLE BACK TO BIRTH
   
-    event_rates.append((r_tilde*(1-(N/k)(S+V)*S), 'Birth')) 
+    if (day%365) >= 359: # the birth phase happens for 6 days at the end of every year (ignoring leap years)
+        event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Birth'))
+        #TODO: if during the birth phase the number of newborn pups exceeds 3.08 pups per female (sex ratio is about 1:2 males to females (Hoogland, 2013)) then r tilde is set to zero.
     event_rates.append((mu*S, 'Susceptible Death')) 
     event_rates.append((mu*Ec, 'Infectious (Contact) Death')) 
     event_rates.append((mu*Ef, 'Infectious (Flea) Death')) 
@@ -47,19 +50,5 @@ def host_choose_event(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2):
     event_rates.append((alpha*Ic,'Plague Death (Contact)')) 
     event_rates.append((alpha*If, 'Plague Death (Flea)')) 
     
-
-
-    # ==== CHOOSE AN EVENT : ==== 
-
     event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')])) #format array
-
-    # check that events can happen:
-    a0 = np.sum(event_rates['rate']) # total of all rates
-    if a0 <= 0:
-        return 0, None
-    
-    #do a weighted random draw:
-    event_probabilities = event_rates['rate']/a0
-    chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
-    
-    return a0, chosen_event[0]
+    return event_rates
