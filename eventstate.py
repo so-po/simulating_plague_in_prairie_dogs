@@ -17,7 +17,7 @@ host_event_outcomes = np.array([
     [ 0,  0,  0,  0, -1,  0, +1],   # Plague Death (Contact)
     [ 0,  0,  0,  0,  0, -1, +1],   # Plague Death (Flea)
 ])
-host_event_names = ["Birth", "Susceptible Death", "Infectious (Contact) Death", 
+host_event_names = ["Host Birth", "Susceptible Death", "Infectious (Contact) Death", 
                "Infectious (Flea) Death","Vaccinated Death","Reservoir Decay",
                 "Susceptible Inf. (Contact)","Susceptible Inf. (Reservoir)",
                 "Susceptible Inf. (Flea)", "Loss of Immunity","End of latency (Contact)",
@@ -27,7 +27,7 @@ host_event_names = ["Birth", "Susceptible Death", "Infectious (Contact) Death",
 vector_event_outcomes = np.array([
 
     #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
-    [ 1,   0,   0,   0,    0,    0,   0,    0], #Birth
+    [ 1,   0,   0,   0,    0,    0,   0,    0], #Flea Birth
     [-1,   0,   0,   0,    0,    0,   0,    0], #Susceptible (Q) Death
     [ 0,   -1,  0,   0,    0,    0,   0,    0], #Susceptible (H) Death
     [ 0,   0,  -1,   0,    0,    0,   0,    0], #Infectious (Q) Death
@@ -56,7 +56,7 @@ vector_event_outcomes = np.array([
 ])
 
 vector_event_names = [
-    "Birth",
+    "Flea Birth",
     "Susceptible (Q) Death",
     "Susceptible (H) Death",
     "Infectious (Q) Death",

@@ -43,7 +43,7 @@ def get_host_events(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2, day):
     event_rates.append((beta_r*(M/B)*S, 'Susceptible Inf. (Reservoir)'))    
     event_rates.append(((beta_f1*Fiq1+ beta_f2*Fiq2)*(1-math.e**(-alpha*(N/B)))*S, 'Susceptible Inf. (Flea)')) 
 
-    event_rates.append((lmbda*v, 'Loss of Immunity')) 
+    event_rates.append((lmbda*V, 'Loss of Immunity')) 
     event_rates.append((sigma*Ec, 'End of latency (Contact)'))    
     event_rates.append((sigma*Ef, 'End of latency (Flea)'))    
 
