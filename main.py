@@ -39,7 +39,7 @@ def run_simulation(max_days = 500):
     times = []
 
     while t <= max_days:
-
+        N = S + Ef + Ec + V + If + Ic #recompute total hosts
         if (N == 0):
             print("ENDING SIMULATION RUN: Prairie dogs have gone extinct.")
             break
