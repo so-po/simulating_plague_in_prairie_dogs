@@ -30,7 +30,7 @@ def get_host_events(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2, day):
     # CIRCLE BACK TO BIRTH
   
     if (day%365) >= 359: # the birth phase happens for 6 days at the end of every year (ignoring leap years)
-        event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Birth'))
+        event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth'))
         #TODO: if during the birth phase the number of newborn pups exceeds 3.08 pups per female (sex ratio is about 1:2 males to females (Hoogland, 2013)) then r tilde is set to zero.
     event_rates.append((mu*S, 'Susceptible Death')) 
     event_rates.append((mu*Ec, 'Infectious (Contact) Death')) 

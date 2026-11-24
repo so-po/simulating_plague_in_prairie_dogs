@@ -6,7 +6,7 @@ from eventstate import *
 from vector_submodel import * 
 from host_submodel import *
 
-def run_simulation(max_days = 500):
+def run_simulation(max_days = 100):
 
     # ==== SET UP COMPARTMENTS: ====
 
@@ -114,7 +114,7 @@ def run_simulation(max_days = 500):
         
     return times, host_compartments, vector_compartments
 
-times, host_compartments, vector_compartments = run_simulation()
+times, host_compartments, vector_compartments = run_simulation(50)
 
 # === PLOT ===
 # TODO

@@ -41,7 +41,7 @@ def get_vector_events(Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2, Ic, If, N):
 
     # BIRTH
     F_0 = Fsh + Feh #total number of fleas that can reproduce
-    event_rates.append((r_f*(N/(1+N+F_0))*F_0, 'Birth'))
+    event_rates.append((r_f*(N/(1+N+F_0))*F_0, 'Flea Birth'))
 
     # DEATH (NATURAL & PLAGUE):
     event_rates.append((mu_f*Fsq, 'Susceptible (Q) Death')) # s q natural death
