@@ -40,7 +40,9 @@ def run_simulation(max_days = 100):
     vector_compartments = []
     host_compartments = []
     times = []
-    host_populations = []
+
+    new_pups_born = 0
+    females_before_birth_phase = 0
 
     while t <= max_days:
         N = S + Ef + Ec + V + If + Ic #recompute total hosts
@@ -114,14 +116,22 @@ def run_simulation(max_days = 100):
 
         # BIRTH & VACCINATION:
         if (t%365) >= 359: # the birth phase & vaccination happens for 6 days at the end of every year (ignoring leap years)
-            event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth'))
-            #TODO: if during the birth phase the number of newborn pups exceeds 3.08 pups per female (sex ratio is about 1:2 males to females (Hoogland, 2013)) then r tilde is set to zero.
+            # birth is capped at 3.08 newborn pups per female:
+            if (new_pups_born == 0 or females_before_birth_phase == 0):
+                females_before_birth_phase = S * 2/3
+            
+            if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
+                event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth'))
 
-            # susceptible prarie dogs get vaccinated:
+            # susceptible prairie dogs get vaccinated:
             num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
             V += num_vaccinated
             S -= num_vaccinated
 
+        elif ((new_pups_born != 0 or females_before_birth_phase != 0)): # reset newborn tracker
+            females_before_birth_phase = 0
+            new_pups_born = 0
+        
         event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')]))
 
         a0 = np.sum(event_rates['rate'])
@@ -183,11 +193,10 @@ def run_simulation(max_days = 100):
             raise Exception(f"ERROR: Event name DNE in vector or host list: {chosen_event}.")
 
         times.append(t)
-        host_populations.append(N)
-        host_compartments.append([S, V, Ec, Ef, Ic, If, M])
+        host_compartments.append([S, V, Ec, Ef, Ic, If, M, N])
         vector_compartments.append([Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2])
         
-    return times, host_populations, host_compartments, vector_compartments
+    return times, host_compartments, vector_compartments
 
 # === PLOT ===
 # TODO
@@ -196,25 +205,30 @@ def run_simulation(max_days = 100):
 # pr = Profile()
 # pr.enable()
 
-times, host_population, host_compartments, vector_compartments = run_simulation(365*11)
+times, host_compartments, vector_compartments = run_simulation(365*11)
 
 # pr.disable()
 # pr.print_stats(sort='time')
 
-# PLOT OF HOST POPULATION:
-plt.plot(times, host_population)
+host_compartments = np.array(host_compartments)
+
+# # PLOT OF HOST POPULATION:
+# plt.title('host population')
+# plt.plot(times, host_compartments[:, 7])
+# plt.xlabel('time (days)')
+# plt.ylabel('# of prairie dogs alive')
+# plt.show()
+
+
+# PLOT OF COMPARTMENTS: 
+plt.title('host population per compartment')
+plt.plot(times, host_compartments[:, 0], label='S')
+plt.plot(times, host_compartments[:, 4], label='If')
+plt.plot(times, host_compartments[:, 5], label='Ic')
+plt.plot(times, host_compartments[:, 6], label='M')
 plt.xlabel('time (days)')
-plt.ylabel('total # of prairie dogs')
+plt.ylabel('# of prairie dogs (per compartment)')
+plt.legend()
 plt.show()
 
-
-## PLOT OF COMPARTMENTS: 
-# host_compartments = np.array(host_compartments)
-# plt.plot(times, host_compartments[:, 0], label='S')
-# plt.plot(times, host_compartments[:, 4], label='If')
-# plt.plot(times, host_compartments[:, 5], label='Ic')
-# plt.plot(times, host_compartments[:, 6], label='M')
-# plt.xlabel('time (days)')
-# plt.ylabel('# of prairie dogs (per compartment)')
-# plt.legend()
-# plt.show()
+#TODO: these plots don't look like the ones from the paper (they don't have the characteristic jump in population occuring every year)

@@ -11,7 +11,7 @@ disease_arrival_year_range = [0, 5] #years of vaccination before disease arrival
 # Values: (placeholder values - we need to set these)
 #TODO
 lmbda = 1/270 # = 9 months of immunity 
-VE = 0
+VE = 0.9
 d = None
 eta = None
 disease_arrival_year = 1
@@ -38,3 +38,5 @@ gamma = 0.28 #transmission rate: hosts to vector
 tau = 0.009 #exposed_period
 epsilon = 0.5 #graduation rate from early to late-stage
 s = 0.33 #disease-induced mortality rate
+
+max_new_pups_per_female = 3.08
