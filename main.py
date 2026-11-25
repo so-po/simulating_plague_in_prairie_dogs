@@ -13,7 +13,7 @@ def run_simulation(max_days = 100):
     # ==== SET UP COMPARTMENTS: ====
 
     # host compartments:
-    S = 1000
+    S = 500
     Ef = 0
     Ec = 0
     V = 0
@@ -24,7 +24,7 @@ def run_simulation(max_days = 100):
     N = S+Ef+Ec+V+If+Ic
 
     # vector compartments:
-    Fsq = 100
+    Fsq = 5000
     Fsh = 0
     Feq = 100
     Feh = 0
@@ -128,7 +128,7 @@ def run_simulation(max_days = 100):
             chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
         except:
             print("ERROR: negative/incorrect probabilties")
-            print(event_rates)
+            # print(event_rates)
             break
         
         # ==== UPDATE TIME BASED ON a0: ====
@@ -180,7 +180,14 @@ def run_simulation(max_days = 100):
 # === PLOT ===
 # TODO
 
-# times, host_compartments, vector_compartments = run_simulation(100)
+
+pr = Profile()
+pr.enable()
+
+times, host_compartments, vector_compartments = run_simulation(100)
+
+pr.disable()
+pr.print_stats(sort='time')
 
 # host_compartments = np.array(host_compartments)
 
@@ -190,13 +197,3 @@ def run_simulation(max_days = 100):
 # plt.plot(times, host_compartments[:, 6], label='M')
 # plt.legend()
 # plt.show()
-
-
-with Profile() as profile:
-    print(f"{run_simulation(100) = }")
-    (
-        Stats(profile)
-        .strip_dirs()
-        .sort_stats(SortKey.TIME)
-        .print_stats()
-    )
