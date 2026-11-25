@@ -37,7 +37,7 @@ def get_host_events(S, V, M, Ec, Ef, Ic, If, N, Fiq1, Fiq2, day):
     event_rates.append((mu*Ef, 'Infectious (Flea) Death')) 
     event_rates.append((mu*V, 'Vaccinated Death')) 
 
-    event_rates.append((mu*zeta, 'Reservoir Decay')) 
+    event_rates.append((zeta*M, 'Reservoir Decay')) 
 
     event_rates.append((beta_c*((Ic+If)/N)*S, 'Susceptible Inf. (Contact)'))    
     event_rates.append((beta_r*(M/B)*S, 'Susceptible Inf. (Reservoir)'))    
