@@ -50,6 +50,7 @@ def run_simulation(max_days = 100):
             print("ENDING SIMULATION RUN: Prairie dogs have gone extinct.")
             break
 
+
         # ==== CHOOSE EVENT : ====
 
         F_0 = Fsh + Feh #total number of fleas that can reproduce
@@ -114,25 +115,27 @@ def run_simulation(max_days = 100):
         ]
 
 
-        # BIRTH & VACCINATION:
         if (t%365) >= 359: # the birth phase & vaccination happens for 6 days at the end of every year (ignoring leap years)
             # birth is capped at 3.08 newborn pups per female:
             if (new_pups_born == 0 or females_before_birth_phase == 0):
-                females_before_birth_phase = S * 2/3
+                females_before_birth_phase = S+V * 2/3 #+V accounts for vacc females too
             
             if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
-                event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth')) #took out *S
+                 event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth'))
+                 #Took out *S, added a max so it cannot go below negative
+                  
+
+        elif ((new_pups_born != 0 or females_before_birth_phase != 0)): # reset newborn tracker
+            females_before_birth_phase = 0
+            new_pups_born = 0
 
             # susceptible prairie dogs get vaccinated:
             num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
             V += num_vaccinated
             S -= num_vaccinated
+            #MOVED THIS INSIDE THE ELIF
 
             
-        elif ((new_pups_born != 0 or females_before_birth_phase != 0)): # reset newborn tracker
-            females_before_birth_phase = 0
-            new_pups_born = 0
-        
         event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')]))
 
         a0 = np.sum(event_rates['rate'])
