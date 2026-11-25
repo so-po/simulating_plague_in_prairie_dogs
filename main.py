@@ -59,10 +59,10 @@ def run_simulation(max_days = 100):
             (mu*Ec, 'Infectious (Contact) Death'),
             (mu*Ef, 'Infectious (Flea) Death'),
             (mu*V, 'Vaccinated Death'),
-            (mu*zeta, 'Reservoir Decay'),
+            (zeta*M, 'Reservoir Decay'),
             (beta_c*((Ic+If)/N)*S, 'Susceptible Inf. (Contact)'),
             (beta_r*(M/B)*S, 'Susceptible Inf. (Reservoir)'),
-            ((beta_f1*Fiq1+ beta_f2*Fiq2)*(1-math.e**(-alpha*(N/B)))*S, 'Susceptible Inf. (Flea)'),
+            ((beta_f1*Fiq1+ beta_f2*Fiq2)*find_host_rate*S, 'Susceptible Inf. (Flea)'),
             (lmbda*V, 'Loss of Immunity'),
             (sigma*Ec, 'End of latency (Contact)'),
             (sigma*Ef, 'End of latency (Flea)'),
@@ -105,7 +105,7 @@ def run_simulation(max_days = 100):
             (epsilon*Fih1, 'Grad. to Late Stage (H)'),
             (epsilon*Fiq1, 'Grad. to Late Stage (Q)'),
 
-            (delta*Fiq2, 'Late Stage Leaves Host'),
+            (delta*Fih2, 'Late Stage Leaves Host'),
             (find_host_rate*Fiq2, 'Late Stage, Finds Host')
         ]
 
@@ -132,7 +132,6 @@ def run_simulation(max_days = 100):
             print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
             print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
 
-            #TODO: bug w/ Fih2 becoming -1 :/
             break
         
         # ==== UPDATE TIME BASED ON a0: ====
