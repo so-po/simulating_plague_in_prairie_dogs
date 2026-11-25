@@ -43,6 +43,7 @@ def run_simulation(max_days = 100):
 
     new_pups_born = 0
     females_before_birth_phase = 0
+    disease_introduced = False
 
     while t <= max_days:
         N = S + Ef + Ec + V + If + Ic #recompute total hosts
@@ -161,9 +162,10 @@ def run_simulation(max_days = 100):
         
         t += np.random.exponential(1 / a0) # numpy takes the scale = 1/rate
 
-        if (t >= 365*disease_arrival_year and Ic == 0): # introduce first infection after 'disease_arrival_year' years
-            Ic = 1
-
+        if not disease_introduced and t >= 365*disease_arrival_year: #adding flag for disease introduction
+            Ic += 1
+            disease_introduced = True
+        
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
         if chosen_event in host_event_outcomes.keys():
@@ -178,6 +180,9 @@ def run_simulation(max_days = 100):
             Ic += ic
             If += i_f
             M += m
+
+            if chosen_event == "Host Birth": 
+                new_pups_born += 1
             
         elif chosen_event in vector_event_outcomes.keys():
 
@@ -227,8 +232,8 @@ host_compartments = np.array(host_compartments)
 # PLOT OF COMPARTMENTS: 
 plt.title('host population per compartment')
 plt.plot(times, host_compartments[:, 0], label='S')
-plt.plot(times, host_compartments[:, 4], label='If')
-plt.plot(times, host_compartments[:, 5], label='Ic')
+plt.plot(times, host_compartments[:, 4], label='Ic')
+plt.plot(times, host_compartments[:, 5], label='If')
 plt.plot(times, host_compartments[:, 6], label='M')
 plt.xlabel('time (days)')
 plt.ylabel('# of prairie dogs (per compartment)')
