@@ -4,6 +4,7 @@ from pstats import SortKey, Stats
 import matplotlib
 import matplotlib.pylab as plt
 import math
+import numpy as np
 
 from parameters import *
 from eventstate import *
@@ -124,8 +125,9 @@ def run_simulation(max_days = 100):
 
         event_probabilities = event_rates['rate']/a0
 
+        chosen_event = ""
         try:
-            chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
+            chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)[0]
         except:
             print("ERROR: negative/incorrect probabilties")
             print(event_rates)
@@ -143,9 +145,9 @@ def run_simulation(max_days = 100):
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
-        if chosen_event in host_event_names:
+        if chosen_event in host_event_outcomes.keys():
 
-            host_compartment_updates = host_event_outcomes[host_event_names.index(chosen_event)] # S   V  Ec  Ef  Ic  If   M
+            host_compartment_updates = host_event_outcomes[chosen_event] # S   V  Ec  Ef  Ic  If   M
 
             ss, vv, ec, ef, ic, i_f, m = host_compartment_updates
             S += ss
@@ -156,9 +158,9 @@ def run_simulation(max_days = 100):
             If += i_f
             M += m
             
-        elif chosen_event in vector_event_names:
+        elif chosen_event in vector_event_outcomes.keys():
 
-            vector_compartment_updates = vector_event_outcomes[vector_event_names.index(chosen_event)] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
+            vector_compartment_updates = vector_event_outcomes[chosen_event] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
 
             fsq, fsh, feq, feh, fiq1, fih1, fiq2, fih2 = vector_compartment_updates
             Fsq += fsq
@@ -183,13 +185,13 @@ def run_simulation(max_days = 100):
 # TODO
 
 
-# pr = Profile()
-# pr.enable()
+pr = Profile()
+pr.enable()
 
 times, host_compartments, vector_compartments = run_simulation(365*11)
 
-# pr.disable()
-# pr.print_stats(sort='time')
+pr.disable()
+pr.print_stats(sort='time')
 
 host_compartments = np.array(host_compartments)
 
