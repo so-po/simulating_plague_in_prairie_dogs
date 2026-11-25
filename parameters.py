@@ -11,10 +11,10 @@ h_range = [0, 5] #years of vaccination before disease arrival
 # Values: (placeholder values - we need to set these)
 #TODO
 lmbda = 0 
-v = 0 
+v = 0
 d = None
 eta = None
-h = None
+h = 1
 
 # === CONSTANTS: === 
 

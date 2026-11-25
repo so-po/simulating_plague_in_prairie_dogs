@@ -13,7 +13,7 @@ def run_simulation(max_days = 100):
     # ==== SET UP COMPARTMENTS: ====
 
     # host compartments:
-    S = 500
+    S = 200
     Ef = 0
     Ec = 0
     V = 0
@@ -24,9 +24,9 @@ def run_simulation(max_days = 100):
     N = S+Ef+Ec+V+If+Ic
 
     # vector compartments:
-    Fsq = 5000
-    Fsh = 0
-    Feq = 100
+    Fsq = 2500 
+    Fsh = 1000
+    Feq = 0
     Feh = 0
     Fiq1 = 0
     Fih1 = 0
@@ -128,12 +128,19 @@ def run_simulation(max_days = 100):
             chosen_event = np.random.choice(event_rates['event_name'], 1, p=event_probabilities)
         except:
             print("ERROR: negative/incorrect probabilties")
-            # print(event_rates)
+            print(event_rates)
+            print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
+            print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
+
+            #TODO: bug w/ Fih2 becoming -1 :/
             break
         
         # ==== UPDATE TIME BASED ON a0: ====
         
         t += np.random.exponential(1 / a0) # numpy takes the scale = 1/rate
+
+        if (t >= 365*h and Ic == 0): # introduce first infection after h years
+            Ic = 1
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
@@ -141,17 +148,15 @@ def run_simulation(max_days = 100):
 
             host_compartment_updates = host_event_outcomes[host_event_names.index(chosen_event)] # S   V  Ec  Ef  Ic  If   M
 
-            ss, v, ec, ef, ic, i_f, m = host_compartment_updates
+            ss, vv, ec, ef, ic, i_f, m = host_compartment_updates
             S += ss
-            V += v
+            V += vv
             Ec += ec
             Ef += ef
             Ic += ic
             If += i_f
             M += m
-
-            # print("Host: ", S, " ", V, " ", Ec, " ", Ef, " ", Ic, " ", If, " ", M)
-
+            
         elif chosen_event in vector_event_names:
 
             vector_compartment_updates = vector_event_outcomes[vector_event_names.index(chosen_event)] #F_SQ F_SH F_EQ F_EH F_IQ1 F_IH1 F_IQ2 F_IH2
@@ -165,8 +170,6 @@ def run_simulation(max_days = 100):
             Fih1 += fih1
             Fiq2 += fiq2
             Fih2 += fih2
-
-            # print("Vector: ", Fsq, " ", Fsh, " ", Feq, " ", Feh, " ", Fiq1, " ", Fih1, " ", Fiq2, " ", Fih2)
         
         else:
             raise Exception(f"ERROR: Event name DNE in vector or host list: {chosen_event}.")
@@ -181,19 +184,21 @@ def run_simulation(max_days = 100):
 # TODO
 
 
-pr = Profile()
-pr.enable()
+# pr = Profile()
+# pr.enable()
 
-times, host_compartments, vector_compartments = run_simulation(100)
+times, host_compartments, vector_compartments = run_simulation(365*11)
 
-pr.disable()
-pr.print_stats(sort='time')
+# pr.disable()
+# pr.print_stats(sort='time')
 
-# host_compartments = np.array(host_compartments)
+host_compartments = np.array(host_compartments)
 
-# plt.plot(times, host_compartments[:, 0], label='S')
-# plt.plot(times, host_compartments[:, 4], label='If')
-# plt.plot(times, host_compartments[:, 5], label='Ic')
-# plt.plot(times, host_compartments[:, 6], label='M')
-# plt.legend()
-# plt.show()
+plt.plot(times, host_compartments[:, 0], label='S')
+plt.plot(times, host_compartments[:, 4], label='If')
+plt.plot(times, host_compartments[:, 5], label='Ic')
+plt.plot(times, host_compartments[:, 6], label='M')
+plt.xlabel('time (days)')
+plt.ylabel('# of prairie dogs')
+plt.legend()
+plt.show()
