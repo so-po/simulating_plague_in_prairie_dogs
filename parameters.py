@@ -3,18 +3,18 @@
 
 # Ranges: (Stored as [min value, max value])
 lmbda_range = [0, 1/270] #rate of immunity loss
-v_range = [0, 0.99] #effective proportion of population vaccinated
+VE_range = [0, 0.99] #effective proportion of population vaccinated (originally 'v' in the paper)
 d_range = [0.033, 0.092] #rate of insecticidal dusting
 eta_range = [0, 0.99] #general culling proportion
-h_range = [0, 5] #years of vaccination before disease arrival
+disease_arrival_year_range = [0, 5] #years of vaccination before disease arrival (originally 'h' in the paper)
 
 # Values: (placeholder values - we need to set these)
 #TODO
-lmbda = 0 
-v = 0
+lmbda = 1/270 # = 9 months of immunity 
+VE = 0
 d = None
 eta = None
-h = 1
+disease_arrival_year = 1
 
 # === CONSTANTS: === 
 

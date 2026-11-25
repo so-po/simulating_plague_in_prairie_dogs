@@ -40,6 +40,7 @@ def run_simulation(max_days = 100):
     vector_compartments = []
     host_compartments = []
     times = []
+    host_populations = []
 
     while t <= max_days:
         N = S + Ef + Ec + V + If + Ic #recompute total hosts
@@ -110,10 +111,16 @@ def run_simulation(max_days = 100):
             (find_host_rate*Fiq2, 'Late Stage, Finds Host')
         ]
 
-        
-        if (t%365) >= 359: # the birth phase happens for 6 days at the end of every year (ignoring leap years)
+
+        # BIRTH & VACCINATION:
+        if (t%365) >= 359: # the birth phase & vaccination happens for 6 days at the end of every year (ignoring leap years)
             event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth'))
             #TODO: if during the birth phase the number of newborn pups exceeds 3.08 pups per female (sex ratio is about 1:2 males to females (Hoogland, 2013)) then r tilde is set to zero.
+
+            # susceptible prarie dogs get vaccinated:
+            num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
+            V += num_vaccinated
+            S -= num_vaccinated
 
         event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')]))
 
@@ -140,7 +147,7 @@ def run_simulation(max_days = 100):
         
         t += np.random.exponential(1 / a0) # numpy takes the scale = 1/rate
 
-        if (t >= 365*h and Ic == 0): # introduce first infection after h years
+        if (t >= 365*disease_arrival_year and Ic == 0): # introduce first infection after 'disease_arrival_year' years
             Ic = 1
 
         # ==== UPDATE POPULATION BASED ON EVENT : ====
@@ -176,30 +183,38 @@ def run_simulation(max_days = 100):
             raise Exception(f"ERROR: Event name DNE in vector or host list: {chosen_event}.")
 
         times.append(t)
+        host_populations.append(N)
         host_compartments.append([S, V, Ec, Ef, Ic, If, M])
         vector_compartments.append([Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2])
         
-    return times, host_compartments, vector_compartments
+    return times, host_populations, host_compartments, vector_compartments
 
 # === PLOT ===
 # TODO
 
 
-pr = Profile()
-pr.enable()
+# pr = Profile()
+# pr.enable()
 
-times, host_compartments, vector_compartments = run_simulation(365*11)
+times, host_population, host_compartments, vector_compartments = run_simulation(365*11)
 
-pr.disable()
-pr.print_stats(sort='time')
+# pr.disable()
+# pr.print_stats(sort='time')
 
-host_compartments = np.array(host_compartments)
-
-plt.plot(times, host_compartments[:, 0], label='S')
-plt.plot(times, host_compartments[:, 4], label='If')
-plt.plot(times, host_compartments[:, 5], label='Ic')
-plt.plot(times, host_compartments[:, 6], label='M')
+# PLOT OF HOST POPULATION:
+plt.plot(times, host_population)
 plt.xlabel('time (days)')
-plt.ylabel('# of prairie dogs')
-plt.legend()
+plt.ylabel('total # of prairie dogs')
 plt.show()
+
+
+## PLOT OF COMPARTMENTS: 
+# host_compartments = np.array(host_compartments)
+# plt.plot(times, host_compartments[:, 0], label='S')
+# plt.plot(times, host_compartments[:, 4], label='If')
+# plt.plot(times, host_compartments[:, 5], label='Ic')
+# plt.plot(times, host_compartments[:, 6], label='M')
+# plt.xlabel('time (days)')
+# plt.ylabel('# of prairie dogs (per compartment)')
+# plt.legend()
+# plt.show()
