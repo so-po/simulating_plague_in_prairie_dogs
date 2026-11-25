@@ -31,12 +31,14 @@ alpha_f = 0.5 #blocked vector mortality rate
 alpha_c = 0.5 #contact vector mortality rate 
 zeta = 0.006 #reservoir decay rate
 delta = 0.05 #rate of leaving hosts
-alpha = 0.004 #searching efficiency of questing fleas
+alpha = 0.5 # plague death rate for Ic and If
 mu_f = 0.07 #natural mortality rate
 r_f = 1.5 #conversion efficiency 
 gamma = 0.28 #transmission rate: hosts to vector
 tau = 0.009 #exposed_period
 epsilon = 0.5 #graduation rate from early to late-stage
 s = 0.33 #disease-induced mortality rate
+a = 0.004 # flea searching efficiency (use in find_host_rate and the flea infection term)
+
 
 max_new_pups_per_female = 3.08

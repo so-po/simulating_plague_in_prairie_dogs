@@ -53,7 +53,7 @@ def run_simulation(max_days = 100):
         # ==== CHOOSE EVENT : ====
 
         F_0 = Fsh + Feh #total number of fleas that can reproduce
-        find_host_rate = (1-(math.e**(-1*alpha*(N/B))))
+        find_host_rate = (1-(math.e**(-1*a*(N/B))))
 
         #TODO: rename these to have seperate names for host & fleas
         
@@ -121,13 +121,14 @@ def run_simulation(max_days = 100):
                 females_before_birth_phase = S * 2/3
             
             if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
-                event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth'))
+                event_rates.append((r_tilde*(1-(N/K))*(S+V)*S, 'Host Birth')) #took out *S
 
             # susceptible prairie dogs get vaccinated:
             num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
             V += num_vaccinated
             S -= num_vaccinated
 
+            
         elif ((new_pups_born != 0 or females_before_birth_phase != 0)): # reset newborn tracker
             females_before_birth_phase = 0
             new_pups_born = 0
