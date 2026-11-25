@@ -119,7 +119,7 @@ def run_simulation(max_days = 100):
         if (t%365) >= 359: # the birth phase & vaccination happens for 6 days at the end of every year (ignoring leap years)
             # birth is capped at 3.08 newborn pups per female:
             if (new_pups_born == 0 or females_before_birth_phase == 0):
-                females_before_birth_phase = S+V * 2/3 #+V accounts for vacc females too
+                females_before_birth_phase = (S+V) * (2/3) #+V accounts for vacc females too
             
             if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
                  event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth'))
@@ -201,6 +201,7 @@ def run_simulation(max_days = 100):
         else:
             raise Exception(f"ERROR: Event name DNE in vector or host list: {chosen_event}.")
 
+        N = S + Ef + Ec + V + If + Ic #recompute after update
         times.append(t)
         host_compartments.append([S, V, Ec, Ef, Ic, If, M, N])
         vector_compartments.append([Fsq, Fsh, Feq, Feh, Fiq1, Fih1, Fiq2, Fih2])
