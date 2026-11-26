@@ -44,6 +44,7 @@ def run_simulation(max_days = 100):
     new_pups_born = 0
     females_before_birth_phase = 0
     disease_introduced = False
+    birth_phase_started = True
 
     while t <= max_days:
         N = S + Ef + Ec + V + If + Ic #recompute total hosts
@@ -117,24 +118,24 @@ def run_simulation(max_days = 100):
 
 
         if (t%365) >= 359: # the birth phase & vaccination happens for 6 days at the end of every year (ignoring leap years)
-            # birth is capped at 3.08 newborn pups per female:
-            if (new_pups_born == 0 or females_before_birth_phase == 0):
-                females_before_birth_phase = (S+V) * (2/3) #+V accounts for vacc females too
+            if not birth_phase_started:
+
+                # susceptible prairie dogs get vaccinated:
+                num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
+                V += num_vaccinated
+                S -= num_vaccinated
+
+                #initialize birth variables: 
+                # (birth is capped at 3.08 newborn pups per female):
+                females_before_birth_phase = (S+V) * (2/3) #+V accounts for vacc females too. ratio of males to females is 1:2
+                new_pups_born = 0
+                birth_phase_started = True
             
             if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
-                 event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth'))
-                 #Took out *S, added a max so it cannot go below negative
-                  
+                event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth')) # max to prevent it from going below negative                  
 
-        elif ((new_pups_born != 0 or females_before_birth_phase != 0)): # reset newborn tracker
-            females_before_birth_phase = 0
-            new_pups_born = 0
-
-            # susceptible prairie dogs get vaccinated:
-            num_vaccinated = S - np.random.binomial(S, 1-VE) # = 1 - proportion of prairie dogs that don't get effectively vaccinated
-            V += num_vaccinated
-            S -= num_vaccinated
-            #MOVED THIS INSIDE THE ELIF
+        elif birth_phase_started: # exit birth phase
+            birth_phase_started = False
 
             
         event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')]))
@@ -236,9 +237,8 @@ plt.plot(times, host_compartments[:, 0], label='S')
 plt.plot(times, host_compartments[:, 4], label='Ic')
 plt.plot(times, host_compartments[:, 5], label='If')
 plt.plot(times, host_compartments[:, 6], label='M')
+# plt.plot(times, host_compartments[:, 1], label='V')
 plt.xlabel('time (days)')
 plt.ylabel('# of prairie dogs (per compartment)')
 plt.legend()
 plt.show()
-
-#TODO: these plots don't look like the ones from the paper (they don't have the characteristic jump in population occuring every year)
