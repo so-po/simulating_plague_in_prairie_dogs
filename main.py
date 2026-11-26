@@ -72,6 +72,14 @@ def run_simulation(max_days = 100):
             V += num_vaccinated
             S -= num_vaccinated
 
+            if disease_introduced and eta > 0:
+                S  -= np.random.binomial(S,  eta)
+                V  -= np.random.binomial(V,  eta)
+                Ec -= np.random.binomial(Ec, eta)
+                Ef -= np.random.binomial(Ef, eta)
+                Ic -= np.random.binomial(Ic, eta)
+                If -= np.random.binomial(If, eta)
+
         if not disease_introduced and t >= 365*disease_arrival_year: 
             Ic += 1
             disease_introduced = True
@@ -89,7 +97,10 @@ def run_simulation(max_days = 100):
         find_host_rate = (1-(math.e**(-1*a*(N/B))))
 
         #TODO: rename these to have seperate names for host & fleas
-        
+         
+        d_now = d if (disease_introduced or not reactive_dusting) else 0 # insecticidal dustings
+        mu_fd = mu_f + d_now
+
         event_rates = [ # array of tuples, containing: (event rate, name of event)
             # HOST EVENTS
             (mu*S, 'Susceptible Death'),
@@ -112,18 +123,18 @@ def run_simulation(max_days = 100):
             (r_f*(N/(1+N+F_0))*F_0, 'Flea Birth'),
 
             # DEATH (NATURAL & PLAGUE):
-            (mu_f*Fsq, 'Susceptible (Q) Death'),
-            (mu_f*Fsh, 'Susceptible (H) Death'), 
-            (mu_f*Feq, 'Infectious (Q) Death'), 
-            (mu_f*Feh, 'Infectious (H) Death'), 
+            (mu_fd*Fsq, 'Susceptible (Q) Death'),
+            (mu_fd*Fsh, 'Susceptible (H) Death'),
+            (mu_fd*Feq, 'Infectious (Q) Death'),
+            (mu_fd*Feh, 'Infectious (H) Death'),
 
-            (mu_f*Fiq1, 'Early Stage (Q) Death'), 
-            (mu_f*Fih1, 'Early Stage (H) Death'),
+            (mu_fd*Fiq1, 'Early Stage (Q) Death'),
+            (mu_fd*Fih1, 'Early Stage (H) Death'),
             (s*Fiq1, 'Early Stage (Q) P.D.'),
             (s*Fih1, 'Early Stage (H) P.D.'),
 
-            (mu_f*Fiq2, 'Late Stage (Q) Death'),
-            (mu_f*Fih2, 'Late Stage (H) Death'),
+            (mu_fd*Fiq2, 'Late Stage (Q) Death'),
+            (mu_fd*Fih2, 'Late Stage (H) Death'),
             (s*Fiq2, 'Late Stage (Q) P.D.'),
             (s*Fih2, 'Late Stage (H) P.D.'),
             (delta*Fsh,'Susceptible Leaves Host'),
@@ -240,11 +251,11 @@ times, host_compartments, vector_compartments = run_simulation(365*11)
 host_compartments = np.array(host_compartments)
 
 # # PLOT OF HOST POPULATION:
-# plt.title('host population')
-# plt.plot(times, host_compartments[:, 7])
-# plt.xlabel('time (days)')
-# plt.ylabel('# of prairie dogs alive')
-# plt.show()
+plt.title('host population')
+plt.plot(times, host_compartments[:, 7])
+plt.xlabel('time (days)')
+plt.ylabel('# of prairie dogs alive')
+plt.show()
 
 
 # PLOT OF COMPARTMENTS: 

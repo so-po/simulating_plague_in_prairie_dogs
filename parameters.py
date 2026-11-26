@@ -10,10 +10,11 @@ disease_arrival_year_range = [0, 5] #years of vaccination before disease arrival
 
 # Values: (placeholder values - we need to set these)
 #TODO
-lmbda = 1/270 # = 9 months of immunity 
+lmbda = 1/540
 VE = 0.9
-d = None
-eta = None
+d = 0.033
+eta = 0.1
+reactive_dusting = True
 disease_arrival_year = 1
 
 # === CONSTANTS: === 
