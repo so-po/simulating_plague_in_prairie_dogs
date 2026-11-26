@@ -9,6 +9,15 @@ import numpy as np
 from parameters import *
 from eventstate import *
 
+def next_boundary(t, disease_introduced):
+   ## Returns the next time boundary for the simulation
+    year_start = 365 * math.floor(t / 365)
+    candidates = [year_start + 359, year_start + 365]
+    if not disease_introduced:
+        candidates.append(365 * disease_arrival_year)
+    return min(c for c in candidates if c > t)
+
+
 def run_simulation(max_days = 100):
 
     # ==== SET UP COMPARTMENTS: ====
@@ -47,7 +56,28 @@ def run_simulation(max_days = 100):
     birth_phase_started = False
 
     while t <= max_days:
-        N = S + Ef + Ec + V + If + Ic #recompute total hosts
+        if (t%365) >= 359: # the birth phase happens for 6 days at the end of every year (ignoring leap years)
+            if not birth_phase_started:
+                #initialize birth variables: 
+                # (birth is capped at 3.08 newborn pups per female):
+                females_before_birth_phase = (S+V) * (2/3) #+V accounts for vacc females too. ratio of males to females is 1:2
+                new_pups_born = 0
+                birth_phase_started = True
+
+        elif birth_phase_started: # exit birth phase
+            birth_phase_started = False
+
+            # vaccination pulse
+            num_vaccinated = np.random.binomial(S, VE)
+            V += num_vaccinated
+            S -= num_vaccinated
+
+        if not disease_introduced and t >= 365*disease_arrival_year: 
+            Ic += 1
+            disease_introduced = True
+
+        N = S + Ef + Ec + V + If + Ic
+
         if (N == 0):
             print("ENDING SIMULATION RUN: Prairie dogs have gone extinct.")
             break
@@ -117,24 +147,9 @@ def run_simulation(max_days = 100):
         ]
 
 
-        if (t%365) >= 359: # the birth phase happens for 6 days at the end of every year (ignoring leap years)
-            if not birth_phase_started:
-                #initialize birth variables: 
-                # (birth is capped at 3.08 newborn pups per female):
-                females_before_birth_phase = (S+V) * (2/3) #+V accounts for vacc females too. ratio of males to females is 1:2
-                new_pups_born = 0
-                birth_phase_started = True
-            
+        if birth_phase_started: # births only happen during the birth phase
             if females_before_birth_phase == 0 or (new_pups_born/females_before_birth_phase < max_new_pups_per_female):
-                event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth')) # max to prevent it from going below negative                  
-
-        elif birth_phase_started: # exit birth phase
-            birth_phase_started = False
-
-            # susceptible prairie dogs get vaccinated:
-            num_vaccinated = np.random.binomial(S, VE)
-            V += num_vaccinated
-            S -= num_vaccinated
+                event_rates.append((r_tilde*max(0, 1-(N/K))*(S+V), 'Host Birth')) # max to prevent it from going below negative
 
             
         event_rates = np.array(event_rates, dtype=np.dtype([('rate',np.float64),('event_name','U30')]))
@@ -160,11 +175,13 @@ def run_simulation(max_days = 100):
         
         # ==== UPDATE TIME BASED ON a0: ====
         
-        t += np.random.exponential(1 / a0) # numpy takes the scale = 1/rate
-
-        if not disease_introduced and t >= 365*disease_arrival_year: #adding flag for disease introduction
-            Ic += 1
-            disease_introduced = True
+        dt = np.random.exponential(1 / a0) # numpy takes the scale = 1/rate
+        t_boundary = next_boundary(t, disease_introduced)
+        if t + dt >= t_boundary:
+            # a scheduled event comes before the next random event
+            t = t_boundary
+            continue
+        t += dt
         
         # ==== UPDATE POPULATION BASED ON EVENT : ====
 
