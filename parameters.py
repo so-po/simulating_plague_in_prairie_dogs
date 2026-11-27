@@ -9,8 +9,7 @@ eta_range = [0, 0.99] #general culling proportion
 disease_arrival_year_range = [0, 5] #years of vaccination before disease arrival (originally 'h' in the paper)
 
 # Values: (placeholder values - we need to set these)
-#TODO
-lmbda = 1/540
+lmbda = 1/270 #270 days = 9 months
 VE = 0.9
 d = 0
 eta = 0

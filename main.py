@@ -95,8 +95,6 @@ def run_simulation(max_days = 100):
 
         F_0 = Fsh + Feh #total number of fleas that can reproduce
         find_host_rate = (1-(math.e**(-1*a*(N/B))))
-
-        #TODO: rename these to have seperate names for host & fleas
          
         d_now = d if (disease_introduced or not reactive_dusting) else 0 # insecticidal dustings
         mu_fd = mu_f + d_now
@@ -237,35 +235,77 @@ def run_simulation(max_days = 100):
     return times, host_compartments, vector_compartments
 
 # === PLOT ===
-# TODO
 
+# RUN SIMULATIONS:
+sim_length = 365*11
+iterations = 50
+Ns = []
+timess = []
+for i in range(0, iterations):
+    times, host_compartments, vector_compartments = run_simulation(sim_length)
+    host_compartments = np.array(host_compartments)
+    Ns.append(host_compartments[:, 7])
+    timess.append(times)
+    print(f" {i} / {iterations} complete")
+
+
+# CREATE AN AVERAGED LINE OF ALL THE SIMULATIONS:
+# based on: https://www.mathworks.com/matlabcentral/answers/1463604-plotting-an-average-of-multiple-time-series-of-different-length
+
+# create a normalized time x axis:
+resolution = 10 # for the averaged plot, how many data points should be captured per day
+common_time_length = resolution*sim_length
+common_time = np.linspace(0, sim_length, common_time_length)
+
+# map all the simulation data onto the normalized time and find the mean of these:
+interpolated_Ns_sum = np.zeros(common_time_length)
+for i in range(0, iterations):
+    result = np.interp(common_time, timess[i], Ns[i])
+    interpolated_Ns_sum += result
+
+mean_Ns = interpolated_Ns_sum / iterations
+
+
+# PLOT RESULTS:
+for i in range(0, len(Ns)):
+    plt.plot(timess[i], Ns[i]/200, color='red', alpha=0.2)
+plt.title(f'Mean Proportion of Original Host Population Alive (with {iterations} iterations of simulation)')
+plt.plot(common_time, mean_Ns/200, color='black', label='average')
+plt.legend()
+plt.xlabel('Time (days)')
+plt.ylabel('Proportion of original population alive')
+plt.show()
+
+
+
+## Other potentially useful graphing code: 
 
 # pr = Profile()
 # pr.enable()
 
-times, host_compartments, vector_compartments = run_simulation(365*11)
+# times, host_compartments, vector_compartments = run_simulation(365*11)
 
-# pr.disable()
-# pr.print_stats(sort='time')
+# # pr.disable()
+# # pr.print_stats(sort='time')
 
-host_compartments = np.array(host_compartments)
+# host_compartments = np.array(host_compartments)
 
 # # PLOT OF HOST POPULATION:
-plt.title('host population')
-plt.plot(times, host_compartments[:, 7])
-plt.xlabel('time (days)')
-plt.ylabel('# of prairie dogs alive')
-plt.show()
+# plt.title('host population')
+# plt.plot(times, host_compartments[:, 7])
+# plt.xlabel('time (days)')
+# plt.ylabel('# of prairie dogs alive')
+# plt.show()
 
 
-# PLOT OF COMPARTMENTS: 
-plt.title('host population per compartment')
-plt.plot(times, host_compartments[:, 0], label='S')
-plt.plot(times, host_compartments[:, 4], label='Ic')
-plt.plot(times, host_compartments[:, 5], label='If')
-plt.plot(times, host_compartments[:, 6], label='M')
-# plt.plot(times, host_compartments[:, 1], label='V')
-plt.xlabel('time (days)')
-plt.ylabel('# of prairie dogs (per compartment)')
-plt.legend()
-plt.show()
+# # PLOT OF COMPARTMENTS: 
+# plt.title('host population per compartment')
+# plt.plot(times, host_compartments[:, 0], label='S')
+# plt.plot(times, host_compartments[:, 4], label='Ic')
+# plt.plot(times, host_compartments[:, 5], label='If')
+# plt.plot(times, host_compartments[:, 6], label='M')
+# # plt.plot(times, host_compartments[:, 1], label='V')
+# plt.xlabel('time (days)')
+# plt.ylabel('# of prairie dogs (per compartment)')
+# plt.legend()
+# plt.show()
